@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhatsApp Pairing</title>
+    <style>
+        body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background: #f0f2f5; }
+        .card { background: white; padding: 2rem; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); text-align: center; }
+        input { padding: 10px; width: 80%; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 5px; }
+        button { padding: 10px 20px; background: #25d366; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        #code-display { margin-top: 20px; font-size: 2rem; font-weight: bold; letter-spacing: 5px; color: #075e54; }
+        .loading { color: #666; font-style: italic; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2>Connexion WhatsApp</h2>
+    <p>Entre ton numéro avec l'indicatif (ex: 225...)</p>
+    <input type="text" id="number" placeholder="22505XXXXXXXX">
+    <br>
+    <button onclick="getPairingCode()">Obtenir le code</button>
+    <div id="status"></div>
+    <div id="code-display"></div>
+</div>
+
+<script>
+    async function getPairingCode() {
+        const number = document.getElementById('number').value;
+        const status = document.getElementById('status');
+        const codeDisplay = document.getElementById('code-display');
+
+        if (!number) return alert("Indique un numéro !");
+
+        status.innerText = "Génération du code en cours (patientez 5-10s)...";
+        codeDisplay.innerText = "";
+
+        try {
+            // REMPLACE PAR TON URL RENDER APRES LE DEPLOIEMENT
+            const response = await fetch(`http://localhost:3000/pairing?number=${number}`);
+            const data = await response.json();
+
+            if (data.code) {
+                status.innerText = "Tape ce code sur ton WhatsApp :";
+                codeDisplay.innerText = data.code;
+            } else {
+                status.innerText = data.message || "Erreur";
+            }
+        } catch (err) {
+            status.innerText = "Erreur de connexion au serveur.";
+        }
+    }
+</script>
+
+</body>
+</html>
